@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Tests</title>
+    <style>
+        .pass { color: green; }
+        .fail { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Game Tests</h1>
+    <div id="test-results"></div>
+
+    <!-- Important: Load game logic BEFORE tests.
+         Ensure game.js does not auto-start in a way that interferes.
+         For robust testing, game.js might need refactoring
+         so its components can be instantiated without side effects.
+    -->
+    <script>
+        // Mock canvas and scoreDisplay for game.js to prevent errors during test setup
+        // if they are accessed immediately upon script load.
+        document.body.innerHTML += '<canvas id="gameCanvas"></canvas>';
+        document.body.innerHTML += '<div id="score"></div>';
+
+        // Prevent game from auto-starting
+        var __IS_TEST_ENVIRONMENT = true;
+    </script>
+    <script src="../js/game.js"></script>
+    <script src="test_game.js"></script>
+
+    <script>
+        // Simple test runner
+        const resultsDiv = document.getElementById('test-results');
+        function runTests(tests) {
+            for (const testName in tests) {
+                const testFn = tests[testName];
+                try {
+                    testFn();
+                    resultsDiv.innerHTML += `<p class="pass">PASS: ${testName}</p>`;
+                } catch (e) {
+                    resultsDiv.innerHTML += `<p class="fail">FAIL: ${testName} - ${e.message}</p>`;
+                    console.error(`Test ${testName} failed:`, e);
+                }
+            }
+        }
+        // Assuming tests are defined in test_game.js in an object called 'gameTests'
+        runTests(window.gameTests || {});
+    </script>
+</body>
+</html>
